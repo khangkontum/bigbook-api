@@ -8,7 +8,7 @@ import os
 
 app = Flask(__name__)
 load_dotenv(".env")
-cluster = MongoClient("mongodb+srv://khangkontum:anhyeuem123@bookhub.gl5cb.mongodb.net/?retryWrites=true&w=majority")
+cluster = MongoClient(os.environ.get("MONGO_URI"))
 db = cluster["bookhub"]
 
 
