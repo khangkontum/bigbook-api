@@ -3,4 +3,6 @@ Flask
 pymongo
 dnspython
 python-dotenv
+requests==2.25.1
 # uwsgi
+

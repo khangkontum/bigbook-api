@@ -4,6 +4,8 @@ import pymongo
 from pymongo import MongoClient, mongo_client
 from dotenv import load_dotenv
 import os
+import auth_helper
+import requests
 
 
 app = Flask(__name__)
@@ -73,6 +75,86 @@ def searchBook():
         return response
     except:
         abort(404)
+
+
+# AUTHENTICATE
+@app.route("/auth_exchange", methods=["POST"])
+def auth_exchange_handler():
+    data_dict = request.get_json()
+
+    if not data_dict:
+        msg = "No payload received"
+        return f"Bad Request: {msg}", 400
+
+    if not isinstance(data_dict, dict):
+        msg = "Invalid payload data format"
+        return f"Bad Request: {msg}", 400
+
+    if not "code" in data_dict:
+        msg = "Missing key 'code'"
+        return f"Bad Request: {msg}", 400
+
+    try:
+        output = auth_helper.new_request_auth_exchange(data_dict)
+        return output, 200
+    except Exception as err:
+        return f"Error: {err}", 500
+
+
+@app.route("/auth_refresh", methods=["POST"])
+def auth_refresh():
+    data_dict = request.get_json()
+
+    if not data_dict:
+        msg = "No payload received"
+        return f"Bad Request: {msg}", 400
+
+    if not isinstance(data_dict, dict):
+        msg = "Invalid payload data format"
+        return f"Bad Request: {msg}", 400
+
+    if not "refresh_token" in data_dict:
+        msg = "Missing key 'refresh_token'"
+        return f"Bad Request: {msg}", 400
+
+    try:
+        output = auth_helper.refresh_token(data_dict)
+        return output, 200
+    except Exception as err:
+        return f"Error: {err}", 500
+
+
+@app.route("/auth_info", methods=["POST"])
+def auth_info():
+    data_dict = request.get_json()
+
+    if not data_dict:
+        msg = "No payload received"
+        return f"Bad Request: {msg}", 400
+
+    if not isinstance(data_dict, dict):
+        msg = "Invalid payload data format"
+        return f"Bad Request: {msg}", 400
+
+    if not "access_token" in data_dict:
+        msg = "Missing key 'access_token'"
+        return f"Bad Request: {msg}", 400
+
+    try:
+        output = auth_helper.get_info(data_dict)
+        return output, 200
+    except Exception as err:
+        return f"Error: {err}", 500
+
+#--------------------------------------------------------
+
+
+
+
+
+
+
+
 
 
 @app.errorhandler(404)
