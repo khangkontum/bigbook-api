@@ -3,12 +3,10 @@ from flask import Flask, jsonify, abort, request
 import pymongo
 from pymongo import MongoClient, mongo_client
 import os
-from dotenv import load_dotenv
 
 
 app = Flask(__name__)
-load_dotenv('./.env')
-cluster = MongoClient(os.environ.get("MONGO"))
+cluster = MongoClient("mongodb+srv://khangkontum:anhyeuem123@bookhub.gl5cb.mongodb.net/?retryWrites=true&w=majority")
 db = cluster["bookhub"]
 
 
@@ -86,5 +84,5 @@ def not_found(error=None):
 
 
 if __name__ == "__main__":
-
-    app.run(debug=True)
+    port = os.environ.get("PORT", 5000)
+    app.run(debug=True, port=port)

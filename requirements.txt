@@ -1,5 +1,4 @@
 Flask
 pymongo
-python-dotenv
 dnspython
 # uwsgi
