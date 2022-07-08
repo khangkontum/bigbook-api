@@ -2,10 +2,12 @@ from pydoc import resolve
 from flask import Flask, jsonify, abort, request
 import pymongo
 from pymongo import MongoClient, mongo_client
+from dotenv import load_dotenv
 import os
 
 
 app = Flask(__name__)
+load_dotenv(".env")
 cluster = MongoClient("mongodb+srv://khangkontum:anhyeuem123@bookhub.gl5cb.mongodb.net/?retryWrites=true&w=majority")
 db = cluster["bookhub"]
 

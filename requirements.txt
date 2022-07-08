@@ -2,4 +2,5 @@ gunicorn
 Flask
 pymongo
 dnspython
+python-dotenv
 # uwsgi
