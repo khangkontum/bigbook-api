@@ -51,7 +51,9 @@ def getOneBook(book_id):
 def getBooks():
     try:
         collection = db["book"]
-        response = jsonify(list(collection.find({})))
+        response = jsonify({
+            "data": list(collection.find({}))
+            })
         response.status_code = 200
 
         return response
@@ -67,9 +69,10 @@ def searchBook():
         print(text_search)
 
         collection = db["book"]
-        response = jsonify(list(collection.find({
+        response = jsonify({
+            "data" : list(collection.find({
             "$text": {"$search": text_search}
-        })))
+        }))})
         response.status_code = 200
 
         return response
