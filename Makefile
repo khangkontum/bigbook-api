@@ -1,5 +1,5 @@
 up: down
-	docker run --name=bigbook -p 5000:5000 -d bigbook
+	docker run --name=bigbook -p 5002:5000 -d bigbook
 
 build:
 	docker build -t bigbook .
