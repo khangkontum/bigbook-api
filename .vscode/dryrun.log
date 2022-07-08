@@ -1,0 +1,6 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/Users/khangkontum/Documents/Project/BigBook/backend_flask/api'
+docker compose -f ./docker/docker-compose.yml down -v --remove-orphans
+docker compose -f ./docker/docker-compose.yml up -d --build
+make: Leaving directory `/Users/khangkontum/Documents/Project/BigBook/backend_flask/api'
+ 
