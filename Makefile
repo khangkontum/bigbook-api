@@ -1,8 +1,12 @@
 up: down
-	docker compose -f ./docker/docker-compose.yml up -d --build
+	docker run --name=bigbook -p 5002:5000 -d bigbook
 
 build:
-	docker build -t api:latest -f ./docker/Dockerfile .
+	docker build -t bigbook .
 
 down:
-	docker compose -f ./docker/docker-compose.yml down -v --remove-orphans
+	docker stop bigbook
+	docker rm bigbook
+
+# down:
+# 	docker compose -f ./docker/docker-compose.yml down -v --remove-orphans
