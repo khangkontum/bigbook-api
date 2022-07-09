@@ -1,4 +1,6 @@
+from gc import collect
 from pydoc import resolve
+from urllib import response
 from flask import Flask, jsonify, abort, request
 import pymongo
 from pymongo import MongoClient, mongo_client
@@ -18,6 +20,20 @@ db = cluster["bookhub"]
 def hello_geek():
     return '<h1>Hello We Are BookHub</h2>'
 
+@app.route('/owns/<int:location_id>/<int:book_id>')
+def getOwn(location_id, book_id):
+    try:
+        collection = db["owns"]
+        response = jsonify({
+            "owns": collection.find_one({
+                "book_id":  book_id,
+                "location_id": location_id
+            }) 
+        })
+        response.status_code = 200
+        return response
+    except:
+        abort(404)
 
 @app.route('/locations')
 def getLocation():
