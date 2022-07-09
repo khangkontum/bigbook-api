@@ -30,6 +30,18 @@ def getLocation():
     except:
         abort(404)
 
+@app.route('/locations/<int:location_id>')
+def getOneLocation(location_id):
+    try:
+        collection = db["location"]
+        response = jsonify({
+            "location": collection.find_one({"_id": location_id})
+            })
+        response.status_code = 200
+        return response
+    except:
+        abort(404)
+
 
 @app.route('/books/<int:book_id>')
 def getOneBook(book_id):
