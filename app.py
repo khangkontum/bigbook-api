@@ -312,6 +312,7 @@ def getHistory():
     if request.method == "GET":
         try:
             body = request.get_json()
+            print(body)
             if not "access_token" in body:
                 msg = "Missing key 'access_token'"
                 return f"Bad Request: {msg}", 400
@@ -319,6 +320,7 @@ def getHistory():
             access_token = body["access_token"]
             data = auth_helper.auth_code({"access_token":access_token})
             data = decodeResponse(data)
+            print(data)
 
             customer_id = data["data"]["customer_id"]
 
