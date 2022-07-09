@@ -109,7 +109,7 @@ def get_info(data_dict):
     # Chúng ta sẽ truyền thông tin cho các biến sau từ môi trường lúc khởi động container khi deploy Cloud Run
     CLIENT_KEY = os.environ.get("CLIENT_KEY")
     CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
-    AUTH_ENDPOINT = 'https://api.tiki.vn/tiniapp-sandbox-open-api/oauth/me'
+    AUTH_ENDPOINT = 'https://api.tiki.vn/tiniapp-open-api/oauth/me'
 
     if not CLIENT_KEY:
         raise Exception("CLIENT_KEY missing")
