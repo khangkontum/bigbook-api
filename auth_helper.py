@@ -34,6 +34,9 @@ def new_request_auth_exchange(data_dict):
     CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
     AUTH_ENDPOINT = os.environ.get("AUTH_ENDPOINT")
 
+    print(CLIENT_KEY)
+    print(CLIENT_SECRET)
+
     if not CLIENT_KEY:
         raise Exception("CLIENT_KEY missing")
 
