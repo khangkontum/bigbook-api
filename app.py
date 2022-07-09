@@ -180,19 +180,8 @@ def auth_info():
 #--------------------------------------------------------
 
 
-# @app.route("/cart", method=["POST"])
-# def addToCart(cart):
-#     data = request.get_json()
-#     authCode = data["authCode"]
-#     try:
-#         # VERIFY USER
-#         res = auth_helper.get_info(
-#             jsonify({
-#                 "access_token":authCode}))
-#         if res.status_code != 200:
 
-#     except:
-#         abort(404)
+
 
 
 
