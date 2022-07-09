@@ -34,9 +34,6 @@ def new_request_auth_exchange(data_dict):
     CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
     AUTH_ENDPOINT = os.environ.get("AUTH_ENDPOINT")
 
-    print(CLIENT_KEY)
-    print(CLIENT_SECRET)
-
     if not CLIENT_KEY:
         raise Exception("CLIENT_KEY missing")
 
@@ -58,12 +55,15 @@ def new_request_auth_exchange(data_dict):
     my_signature = sign(CLIENT_SECRET, encodedPayload)
 
     req = urllib.request.Request(AUTH_ENDPOINT, data.encode(), headers)
-    req.add_header('X-Tiniapp-Client-Key', CLIENT_KEY)
+    req.add_header('X-Tiniapp-Client-Id', CLIENT_KEY)
     req.add_header('X-Tiniapp-Signature', my_signature)
     req.add_header('X-Tiniapp-Timestamp', my_timestamp)
 
     response = urllib.request.urlopen(req)
     res = response.read()
+
+    print("here")
+    print(encodedPayload)
 
     return res
 
