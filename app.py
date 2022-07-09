@@ -309,30 +309,29 @@ def confirmCart():
 
 @app.route("/history", methods=["GET"])
 def getHistory():
-    if request.method == "GET":
-        try:
-            body = request.get_json()
-            print(body)
-            if not "access_token" in body:
-                msg = "Missing key 'access_token'"
-                return f"Bad Request: {msg}", 400
+    try:
+        body = request.get_json()
+        print(body)
+        if not "access_token" in body:
+            msg = "Missing key 'access_token'"
+            return f"Bad Request: {msg}", 400
 
-            access_token = body["access_token"]
-            data = auth_helper.auth_code({"access_token":access_token})
-            data = decodeResponse(data)
-            print(data)
+        access_token = body["access_token"]
+        data = auth_helper.auth_code({"access_token":access_token})
+        data = decodeResponse(data)
+        print(data)
 
-            customer_id = data["data"]["customer_id"]
+        customer_id = data["data"]["customer_id"]
 
-            collection = db["history"]
-            response = parse_json({
-                "history": list(collection.find({
-                    "customer_id": customer_id}))})
-            response['status_code'] = 200
-            return response
-        except Exception as e:
-            print(e)
-            abort(404)
+        collection = db["history"]
+        response = parse_json({
+            "history": list(collection.find({
+                "customer_id": customer_id}))})
+        response['status_code'] = 200
+        return response
+    except Exception as e:
+        print(e)
+        abort(404)
 
 
 
