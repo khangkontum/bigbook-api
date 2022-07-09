@@ -4,7 +4,7 @@ import json
 from pydoc import resolve
 from urllib import response
 from flask import Flask, jsonify, abort, request
-from helper_func import decodeResponse
+from helper_func import decodeResponse, parse_json
 import pymongo
 from pymongo import MongoClient, mongo_client
 from dotenv import load_dotenv
@@ -181,20 +181,32 @@ def auth_info():
         return f"Error: {err}", 500
 
 #--------------------------------------------------------
-@app.route("/cart", methods=["POST", "DELETE"])
+@app.route("/cart", methods=["POST", "DELETE", "GET"])
 def addToCart():
 
     body = request.get_json()
     if not "access_token" in body:
-        msg = "Missing key 'access_token'"
-        return f"Bad Request: {msg}", 400
+        abort(400)
 
     access_token = body["access_token"]
     data = auth_helper.auth_code({"access_token":access_token})
     data = decodeResponse(data)
 
+    if request.method == 'GET':
+        try:
+            customer_id = data["data"]["customer_id"]
+            collection = db["cart"]
+            data = collection.find_one({"_id": customer_id})
+            response = jsonify( { "cart":  collection.find_one({"_id": customer_id}) })
+            response.status_code = 200
+            return response
+        except:
+            abort(404)
+
     if request.method == 'POST':
         try:
+            if (not "from" in body) or (not "to" in body) or (not "owns_id" in body):
+                abort(400)
             customer_id = data["data"]["customer_id"]
 
             collection = db["cart"]
@@ -209,7 +221,11 @@ def addToCart():
 
             collection.update_one(
                 {"customer_id": customer_id,},
-                {"$push": {"book_list": body["book_id"]}}
+                {"$push": {"book_list": {
+                    "book": body["book_id"],
+                    "from": body["from"],
+                    "to": body["to"]
+                    }}}
             )
             response = jsonify({
                 "cart": collection.find_one({
@@ -247,6 +263,63 @@ def addToCart():
             abort(404)
 
 
+@app.route("/cart/confirm", methods=["POST"])
+def confirmCart():
+    body = request.get_json()
+    if not "access_token" in body:
+        abort(400)
+
+    access_token = body["access_token"]
+    data = auth_helper.auth_code({"access_token":access_token})
+    data = decodeResponse(data)
+    try:
+        customer_id = data["data"]["customer_id"]
+        cartCollection = db['cart']
+        historyCollection = db['history']
+
+        currentCart = cartCollection.find_one({"_id": customer_id})
+        if (currentCart == None):
+            abort(404)
+        for product in currentCart["book_list"]:
+            historyCollection.insert_one({
+                "customer_id": customer_id,
+                "book": product
+                })
+        response = jsonify({
+            "data": "ok" })
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+        abort(404)
+
+
+@app.route("/history", methods=["GET"])
+def getHistory():
+    if request.method == "GET":
+        try:
+            body = request.get_json()
+            if not "access_token" in body:
+                msg = "Missing key 'access_token'"
+                return f"Bad Request: {msg}", 400
+
+            access_token = body["access_token"]
+            data = auth_helper.auth_code({"access_token":access_token})
+            data = decodeResponse(data)
+
+            customer_id = data["data"]["customer_id"]
+
+            collection = db["history"]
+            response = parse_json({
+                "history": list(collection.find({
+                    "customer_id": customer_id}))})
+            response['status_code'] = 200
+            return response
+        except Exception as e:
+            print(e)
+            abort(404)
+
+
 
 
 
@@ -264,6 +337,11 @@ def not_found(error=None):
     })
     response.status_code = 404
     return response
+
+@app.errorhandler(400)
+def not_found(error=None):
+    msg = "Missing key 'access_token'"
+    return f"Bad Request: {msg}", 400
 
 
 if __name__ == "__main__":

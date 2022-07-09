@@ -62,9 +62,6 @@ def new_request_auth_exchange(data_dict):
     response = urllib.request.urlopen(req)
     res = response.read()
 
-    print("here")
-    print(encodedPayload)
-
     return res
 
 

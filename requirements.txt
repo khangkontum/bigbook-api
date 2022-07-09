@@ -4,5 +4,6 @@ pymongo
 dnspython
 python-dotenv
 requests==2.25.1
+python-bsonjs
 # uwsgi
 
