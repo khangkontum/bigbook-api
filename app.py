@@ -210,6 +210,8 @@ def addToCart():
             customer_id = data["data"]["customer_id"]
 
             collection = db["cart"]
+            bookCollection = db["book"]
+            locationCollection = db['location']
             currentCart = collection.find_one({
                 "customer_id": customer_id
             })
@@ -219,13 +221,22 @@ def addToCart():
                     "customer_id": customer_id,
                     "book_list": []})
 
+            bookDetail = bookCollection.find_one({
+                "_id": body["book_id"]
+            })
+
+            locationDetail = locationCollection.find_one({
+                "_id": body["location_id"]
+            })
+
+
             collection.update_one(
                 {"customer_id": customer_id,},
                 {"$push": {"book_list": {
-                    "book_id": body["book_id"],
+                    "book": bookDetail,
                     "from": body["from"],
                     "to": body["to"],
-                    "location_id": body["location_id"]
+                    "location": locationDetail
                     }}}
             )
             response = jsonify({
@@ -252,7 +263,7 @@ def addToCart():
 
             collection.update_one(
                 {"customer_id": customer_id,},
-                {"$pull": {"book_list": body["book_id"]}}
+                {"$pull": {"book_list.book._id": body["book_id"]}}
             )
             response = jsonify({
                 "cart": collection.find_one({
@@ -286,6 +297,7 @@ def confirmCart():
                 "customer_id": customer_id,
                 "book": product
                 })
+        cartCollection.delete_one({"_id": customer_id})
         response = jsonify({
             "data": "ok" })
         response.status_code = 200
