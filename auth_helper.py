@@ -95,7 +95,7 @@ def refresh_token(data_dict):
     my_signature = sign(CLIENT_SECRET, encodedPayload)
 
     req = urllib.request.Request(AUTH_ENDPOINT, data.encode(), headers)
-    req.add_header('X-Tiniapp-Client-Key', CLIENT_KEY)
+    req.add_header('X-Tiniapp-Client-Id', CLIENT_KEY)
     req.add_header('X-Tiniapp-Signature', my_signature)
     req.add_header('X-Tiniapp-Timestamp', my_timestamp)
 
@@ -109,7 +109,7 @@ def get_info(data_dict):
     # Chúng ta sẽ truyền thông tin cho các biến sau từ môi trường lúc khởi động container khi deploy Cloud Run
     CLIENT_KEY = os.environ.get("CLIENT_KEY")
     CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
-    AUTH_ENDPOINT = 'https://api.tiki.vn/tiniapp-open-api/oauth/me'
+    AUTH_ENDPOINT = f'{os.environ.get("BASE_URL")}/oauth/me'
 
     if not CLIENT_KEY:
         raise Exception("CLIENT_KEY missing")
@@ -125,18 +125,51 @@ def get_info(data_dict):
     }
 
     data = json.dumps(data_dict, separators=(',', ':'))
-
     my_timestamp = str(time.time_ns() // 1_000_000 )
     payload = my_timestamp + '.' + CLIENT_KEY + '.' + data
     encodedPayload = base64URLEncode(payload)
     my_signature = sign(CLIENT_SECRET, encodedPayload)
 
     req = urllib.request.Request(AUTH_ENDPOINT, data.encode(), headers)
-    req.add_header('X-Tiniapp-Client-Key', CLIENT_KEY)
+    req.add_header('X-Tiniapp-Client-Id', CLIENT_KEY)
     req.add_header('X-Tiniapp-Signature', my_signature)
     req.add_header('X-Tiniapp-Timestamp', my_timestamp)
 
     response = urllib.request.urlopen(req)
     res = response.read()
-
+    print(type(response))
     return res
+
+def auth_code(data_dict):
+    # Chúng ta sẽ truyền thông tin cho các biến sau từ môi trường lúc khởi động container khi deploy Cloud Run
+    CLIENT_KEY = os.environ.get("CLIENT_KEY")
+    CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
+    AUTH_ENDPOINT = f'{os.environ.get("BASE_URL")}/oauth/me'
+
+    if not CLIENT_KEY:
+        raise Exception("CLIENT_KEY missing")
+
+    if not CLIENT_SECRET:
+        raise Exception("CLIENT_SECRET missing")
+
+    if not AUTH_ENDPOINT:
+        raise Exception("AUTH_ENDPOINT missing")
+
+    headers = {
+        "Content-Type": "application/json",
+    }
+
+    data = json.dumps(data_dict, separators=(',', ':'))
+    my_timestamp = str(time.time_ns() // 1_000_000 )
+    payload = my_timestamp + '.' + CLIENT_KEY + '.' + data
+    encodedPayload = base64URLEncode(payload)
+    my_signature = sign(CLIENT_SECRET, encodedPayload)
+
+    req = urllib.request.Request(AUTH_ENDPOINT, data.encode(), headers)
+    req.add_header('X-Tiniapp-Client-Id', CLIENT_KEY)
+    req.add_header('X-Tiniapp-Signature', my_signature)
+    req.add_header('X-Tiniapp-Timestamp', my_timestamp)
+
+    response = urllib.request.urlopen(req)
+
+    return response

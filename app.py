@@ -1,7 +1,10 @@
 from gc import collect
+from json import JSONDecoder
+import json
 from pydoc import resolve
 from urllib import response
 from flask import Flask, jsonify, abort, request
+from helper_func import decodeResponse
 import pymongo
 from pymongo import MongoClient, mongo_client
 from dotenv import load_dotenv
@@ -178,6 +181,71 @@ def auth_info():
         return f"Error: {err}", 500
 
 #--------------------------------------------------------
+@app.route("/cart", methods=["POST", "DELETE"])
+def addToCart():
+
+    body = request.get_json()
+    if not "access_token" in body:
+        msg = "Missing key 'access_token'"
+        return f"Bad Request: {msg}", 400
+
+    access_token = body["access_token"]
+    data = auth_helper.auth_code({"access_token":access_token})
+    data = decodeResponse(data)
+
+    if request.method == 'POST':
+        try:
+            customer_id = data["data"]["customer_id"]
+
+            collection = db["cart"]
+            currentCart = collection.find_one({
+                "customer_id": customer_id
+            })
+            if(currentCart == None):
+                currentCart = collection.insert_one({
+                    "_id": customer_id,
+                    "customer_id": customer_id,
+                    "book_list": []})
+
+            collection.update_one(
+                {"customer_id": customer_id,},
+                {"$push": {"book_list": body["book_id"]}}
+            )
+            response = jsonify({
+                "cart": collection.find_one({
+                "customer_id": customer_id})
+            }) 
+            response.status_code = 200
+            return response
+        except:
+            abort(404)
+    if request.method == 'DELETE':
+        try:
+            customer_id = data["data"]["customer_id"]
+
+            collection = db["cart"]
+            currentCart = collection.find_one({
+                "customer_id": customer_id
+            })
+            if(currentCart == None):
+                currentCart = collection.insert_one({
+                    "_id": customer_id,
+                    "customer_id": customer_id,
+                    "book_list": []})
+
+            collection.update_one(
+                {"customer_id": customer_id,},
+                {"$pull": {"book_list": body["book_id"]}}
+            )
+            response = jsonify({
+                "cart": collection.find_one({
+                "customer_id": customer_id})
+            }) 
+            response.status_code = 200
+            return response
+        except:
+            abort(404)
+
 
 
 
