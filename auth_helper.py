@@ -95,7 +95,7 @@ def refresh_token(data_dict):
     my_signature = sign(CLIENT_SECRET, encodedPayload)
 
     req = urllib.request.Request(AUTH_ENDPOINT, data.encode(), headers)
-    req.add_header('X-Tiniapp-Client-Key', CLIENT_KEY)
+    req.add_header('X-Tiniapp-Client-Id', CLIENT_KEY)
     req.add_header('X-Tiniapp-Signature', my_signature)
     req.add_header('X-Tiniapp-Timestamp', my_timestamp)
 
@@ -132,7 +132,7 @@ def get_info(data_dict):
     my_signature = sign(CLIENT_SECRET, encodedPayload)
 
     req = urllib.request.Request(AUTH_ENDPOINT, data.encode(), headers)
-    req.add_header('X-Tiniapp-Client-Key', CLIENT_KEY)
+    req.add_header('X-Tiniapp-Client-Id', CLIENT_KEY)
     req.add_header('X-Tiniapp-Signature', my_signature)
     req.add_header('X-Tiniapp-Timestamp', my_timestamp)
 
