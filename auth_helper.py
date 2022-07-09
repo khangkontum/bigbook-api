@@ -48,6 +48,7 @@ def new_request_auth_exchange(data_dict):
     }
 
     data = json.dumps(data_dict, separators=(',', ':'))
+    print(data)
 
     my_timestamp = str(time.time_ns() // 1_000_000 )
     payload = my_timestamp + '.' + CLIENT_KEY + '.' + data
