@@ -307,7 +307,7 @@ def confirmCart():
         abort(404)
 
 
-@app.route("/history", methods=["GET"])
+@app.route("/history")
 def getHistory():
     try:
         body = request.get_json()
