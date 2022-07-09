@@ -205,7 +205,7 @@ def addToCart():
 
     if request.method == 'POST':
         try:
-            if (not "from" in body) or (not "to" in body) or (not "owns_id" in body):
+            if (not "from" in body) or (not "to" in body) or (not "book_id" in body) or (not "location_id" in body):
                 abort(400)
             customer_id = data["data"]["customer_id"]
 
@@ -222,9 +222,10 @@ def addToCart():
             collection.update_one(
                 {"customer_id": customer_id,},
                 {"$push": {"book_list": {
-                    "book": body["book_id"],
+                    "book_id": body["book_id"],
                     "from": body["from"],
-                    "to": body["to"]
+                    "to": body["to"],
+                    "location_id": body["location_id"]
                     }}}
             )
             response = jsonify({
